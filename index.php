@@ -1,22 +1,14 @@
-<?php declare(strict_types=1);
+<html>
 
-$user = htmlentities($_POST['user'], ENT_QUOTES, 'UTF-8');
-$pass = htmlentities($_POST['pass'], ENT_QUOTES, 'UTF-8');
-$link = mysqli_connect('localhost', 'db_user', 'db_password', 'db_name');
+<head>
+<title>Ind</title>
+</head>
 
-if (false == $link) {
-    echo "Error: " . mysqli_connect_error();
-    exit();
-}
+<body>
+<br><a href="z1">z1</a>
+<br><a href="z2">z2</a>
+<br><a href="z3">z3</a>
+<br><a href="z4">z4</a>
+</body>
 
-$result = mysqli_query($link, "SELECT * FROM users WHERE username='$user'");
-$record = mysqli_fetch_array($result);
-
-if ($record && $record['password'] === $pass) {
-    echo "Login successful";
-} else {
-    echo "Invalid login or password";
-}
-mysqli_close($link);
-
-?>
+</html>

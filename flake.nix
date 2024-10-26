@@ -66,7 +66,7 @@
 
       set -eu
       
-      mysql -u root -e "ALTER USER 'root'@'localhost' IDENTIFIED BY $MYSQL_PASSWD"
+      mysql -u root -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '$MYSQL_PASSWD'" > /dev/null 2>&1
     '';
   in
   {
@@ -77,7 +77,8 @@
 
       shellHook = ''
         export MYSQL_UNIX_PORT=${mysql_socket}
-        init_mysql && start_mysql && echo "MySQL ready, connect with: mysql -u root" || echo "Error starting mysql server"
+        init_mysql && start_mysql && echo 'MySQL ready, connect with: mysql -u root -p$MYSQL_PASSWD' || echo "Error starting mysql server"
+        set_mysql_passwd && echo "MySQL password set successfully" || echo "MySQL password was already set"
       '';
     };
   };
