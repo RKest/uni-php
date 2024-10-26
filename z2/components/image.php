@@ -8,15 +8,14 @@ if (!isset($_SESSION['user'])) {
 $db_pass = getenv("MYSQL_PASSWD");
 $conn = new mysqli('127.0.0.1', 'root', $db_pass, 'z2');
 
-$stmt = $conn->prepare("SELECT image_data, image_type FROM users WHERE username = ?");
+$user = $_SESSION['user'];
+$stmt = $conn->prepare("SELECT image FROM users WHERE username = ?");
 $stmt->bind_param("s", $user);
 $stmt->execute();
 $result = $stmt->get_result()->fetch_assoc();
 
-print_r($result);
-
-$img_src = isset($result['image_data']) ? 
-    "data:" . $result['image_type'] . ";base64," . base64_encode($result['image_data']) :
+$img_src = isset($result['image']) ? 
+    $result['image'] :
     "data: image/png; base64,". base64_encode(file_get_contents("static/default.png"));
 ?>
 

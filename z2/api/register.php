@@ -1,11 +1,11 @@
 <?php
 
-$image_data = null;
-$image_type = null;
+$image = null;
 
 if (!empty($_FILES['profile_image']['tmp_name'])) {
-    $image_data = file_get_contents($_FILES['profile_image']['tmp_name']);
-    $image_type = $_FILES['profile_image']['type'];
+    $pimage = $_FILES['profile_image'];
+    $contents = file_get_contents($pimage['tmp_name']);
+    $image = "data:" . $pimage['type'] . ";base64," . base64_encode($contents);
 }
 
 $user = htmlentities($_POST['user'], ENT_QUOTES, 'UTF-8');
@@ -19,8 +19,8 @@ if ($user === "" || $pass === "") {
 $db_pass = getenv("MYSQL_PASSWD");
 $conn = new mysqli('127.0.0.1', 'root', $db_pass, 'z2');
 
-$stmt = $conn->prepare("INSERT INTO users (username, password, image_data, image_type) VALUES (?, ?, ?, ?)");
-$stmt->bind_param("ssss", $user, $pass, $image_data, $image_type);
+$stmt = $conn->prepare("INSERT INTO users (username, password, image) VALUES (?, ?, ?)");
+$stmt->bind_param("sss", $user, $pass, $image);
 
 if (!$stmt->execute()) {
     echo "Registration failed";
