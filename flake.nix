@@ -72,7 +72,7 @@
   {
     devShells.${system}.default = pkgs.mkShell {
       name = "multi-php";
-      nativeBuildInputs = [pkgs.phpactor];
+      nativeBuildInputs = [pkgs.phpactor pkgs.emmet-language-server];
       buildInputs = [pkgs.php pkgs.mysql84 init_script start_script stop_script set_password];
 
       shellHook = ''
