@@ -1,3 +1,6 @@
+CREATE DATABASE z1 CHARACTER SET utf8 COLLATE utf8_polish_ci;
+USE z1;
+
 CREATE TABLE `users` (
 	`id` smallint(6) NOT NULL,
 	`username` varchar(128) COLLATE utf8_polish_ci NOT NULL,

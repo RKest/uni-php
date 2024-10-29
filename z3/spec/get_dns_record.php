@@ -1,0 +1,15 @@
+<?php
+session_start();
+if (!isset($_SESSION['user'])) {
+	header('Location: /z3/sign_in.php');
+	exit();
+}
+?>
+
+<?php require_once '../common_head.php'; ?>
+<?php require_once '../nav.php'; ?>
+
+<?php
+	$result = dns_get_record("pbs.edu.pl");
+	print_r($result);
+?>

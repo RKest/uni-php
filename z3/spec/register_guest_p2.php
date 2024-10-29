@@ -1,4 +1,10 @@
 <?php
+	session_start();
+	if (!isset($_SESSION['user'])) {
+		header('Location: /z3/sign_in.php');
+		exit();
+	}
+
 	$ipaddr = $_SERVER["REMOTE_ADDR"];
 
 	$db_pass = getenv("MYSQL_PASSWD");
@@ -12,7 +18,7 @@
 	$java_allowed = intval($_GET['java']);
 	$language = $_GET['lang'];
 
-	$stmt = $conn->prepare("INSERT INTO guests (ipaddr, browser, screen_resolution, browser_resolution, colors, cookies_allowed, java_allowed, language) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+	$stmt = $conn->prepare("INSERT IGNORE INTO guests (ipaddr, browser, screen_resolution, browser_resolution, colors, cookies_allowed, java_allowed, language) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
 	$stmt->bind_param("ssssiiis", $ipaddr, $browser, $screen_resolution, $browser_resolution, $colors, $cookies_allowed, $java_allowed, $language);
 
 	if (!$stmt->execute()) {
@@ -23,5 +29,6 @@
 	}
 	$stmt->close();
 	$conn->close();
-	header("Location: /z3/guests_table.php");
+	header("Location: /z3/spec/guests_table.php");
 ?>
+
