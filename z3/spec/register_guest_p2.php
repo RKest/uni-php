@@ -5,7 +5,7 @@
 		exit();
 	}
 
-	$ipaddr = $_SERVER["REMOTE_ADDR"];
+	$ipaddr = $_SERVER["HTTP_CLIENT_IP"] ?? $_SERVER["HTTP_X_FORWARDED_FOR"] ?? $_SERVER["REMOTE_ADDR"];
 
 	$db_pass = getenv("MYSQL_PASSWD");
 	$conn = new mysqli('127.0.0.1', 'root', $db_pass, 'z3');
