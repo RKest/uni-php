@@ -1,6 +1,6 @@
 <?php
-	$ipaddress = $_SERVER["REMOTE_ADDR"];
-	$details = json_decode(file_get_contents("http://ipinfo.io/{$ipaddress}/geo"));
+	$ipaddr = $_SERVER["HTTP_CLIENT_IP"] ?? $_SERVER["HTTP_X_REAL_IP"] ?? $_SERVER["HTTP_X_FORWARDED_FOR"] ?? $_SERVER["REMOTE_ADDR"];
+	$details = json_decode(file_get_contents("http://ipinfo.io/$ipaddr/geo"));
 	if (isset($details->region)) {
 		echo $details->region; echo '<BR />';
 		echo $details->country; echo '<BR />';
