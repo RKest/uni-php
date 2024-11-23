@@ -1,15 +1,22 @@
-<html>
+<?php
 
-<head>
-<title>Ind</title>
-</head>
+require_once __DIR__.'/router.php';
 
-<body>
-<br><a href="z1">z1</a>
-<br><a href="z2">z2</a>
-<br><a href="z3">z3</a>
-<br><a href="z4">z4</a>
-<br><a href="z5">z5</a>
-</body>
+get('/', 'main-nav.php');
 
-</html>
+require_once __DIR__.'/z_common/api/session.php';
+
+post('/$znum/api/sign_in', $post_sign_in);
+post('/$znum/api/sign_up', $post_sign_up);
+get('/$znum/api/sign_out', $get_sign_out);
+get('/$znum/api/profile_image', $get_profile_image);
+
+require_once __DIR__.'/z_common/view/session.php';
+get('/$znum/view/sign_in', $sign_in_view);
+get('/$znum/view/sign_up', $sign_up_view);
+
+require_once __DIR__.'/z_common/view/content.php';
+get('/$znum/$page', function ($znum, $page) {
+	global $content_view;
+	$content_view("$page.php")($znum);
+});
