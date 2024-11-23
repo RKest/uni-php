@@ -68,12 +68,20 @@
       
       mysql -u root -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '$MYSQL_PASSWD'" > /dev/null 2>&1
     '';
+
+
+    php = pkgs.php.buildEnv { 
+      extraConfig = ''
+        upload_max_filesize = 40M
+        post_max_size = 40M
+      '';
+    };
   in
   {
     devShells.${system}.default = pkgs.mkShell {
       name = "multi-php";
       nativeBuildInputs = [pkgs.phpactor pkgs.emmet-language-server];
-      buildInputs = [pkgs.php pkgs.mysql84 init_script start_script stop_script set_password];
+      buildInputs = [php pkgs.mysql84 init_script start_script stop_script set_password];
 
       shellHook = ''
         export MYSQL_UNIX_PORT=${mysql_socket}
