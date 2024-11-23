@@ -21,7 +21,7 @@
             </div>
             
             <div class="mb-2">
-                <input name="profile_image" type="file" class="form-control" accept="image/*" required>
+                <input name="profile_image" type="file" class="form-control" accept="image/*">
             </div>
             
             <button class="w-100 btn btn-lg btn-primary" type="submit">Sign up</button>
