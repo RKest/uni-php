@@ -10,11 +10,13 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 	exit();
 }
 
+require_once __DIR__ . "/common.php";
+
 $user = $_SESSION['z5'];
 $dir = $_POST['dir'] ?? '';
 $uploadDir = "../uploads/$user/$dir/";
 $maxFileSize = 5 * 1024 * 1024;
-$allowedExtensions = ['pdf', 'doc', 'docx', 'txt', 'jpg', 'jpeg', 'png'];
+$allowedExtensions = ['pdf', 'doc', 'docx', 'txt', 'jpg', 'jpeg', 'png', 'mp3'];
 
 if (!file_exists($uploadDir)) {
     mkdir($uploadDir, 0777, true);
@@ -75,7 +77,7 @@ if (!empty($_FILES['file'])) {
     $fileName = $_FILES['file']['name'];
     $result = handleFileUpload($_FILES['file']);
     if ($result['success']) {
-        echo "<li><a href='/tasks/z5/uploads/$uploadDir/$fileName' download>$fileName</a></li>";
+        echo fileElem($user, $dir, $fileName);
     } else {
         header("HTTP/1.1 500 Internal Server Error");
     }
