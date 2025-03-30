@@ -5,8 +5,10 @@
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
   };
 
-  outputs = { self, nixpkgs }:
-  let
+  outputs = {
+    self,
+    nixpkgs,
+  }: let
     system = "x86_64-linux";
     pkgs = nixpkgs.legacyPackages.${system};
 
@@ -65,23 +67,38 @@
       #!${pkgs.stdenv.shell}
 
       set -eu
-      
+
       mysql -u root -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '$MYSQL_PASSWD'" > /dev/null 2>&1
     '';
 
+    init_db = pkgs.writeScriptBin "init_db" ''
+      #!${pkgs.stdenv.shell}
 
-    php = pkgs.php.buildEnv { 
+      set -eu
+
+      export DB_NUM=$1
+      mysql -u root -p$MYSQL_PASSWD < init/z$DB_NUM.sql
+    '';
+
+    install_deps = pkgs.writeScriptBin "install_deps" ''
+      #!${pkgs.stdenv.shell}
+
+      set -eu
+
+      composer require cheprasov/php-redis-client
+    '';
+
+    php = pkgs.php.buildEnv {
       extraConfig = ''
         upload_max_filesize = 40M
         post_max_size = 40M
       '';
     };
-  in
-  {
+  in {
     devShells.${system}.default = pkgs.mkShell {
       name = "multi-php";
-      nativeBuildInputs = [pkgs.phpactor pkgs.emmet-language-server];
-      buildInputs = [php pkgs.mysql84 init_script start_script stop_script set_password];
+      nativeBuildInputs = [pkgs.phpactor pkgs.emmet-language-server pkgs.php82Packages.composer set_password init_db install_deps];
+      buildInputs = [php pkgs.mysql84 init_script start_script stop_script pkgs.redis];
 
       shellHook = ''
         export MYSQL_UNIX_PORT=${mysql_socket}

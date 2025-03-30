@@ -22,7 +22,7 @@ $post_sign_up = function($znum) {
     $db_pass = getenv("MYSQL_PASSWD");
     $conn = new mysqli('127.0.0.1', 'root', $db_pass, $znum);
 
-    $stmt = $conn->prepare("INSERT INTO users (username, password, image) VALUES (?, ?, ?)");
+    $stmt = $conn->prepare("INSERT IGNORE INTO users (username, password, image) VALUES (?, ?, ?)");
     $stmt->bind_param("sss", $user, $pass, $image);
 
     if (!$stmt->execute()) {

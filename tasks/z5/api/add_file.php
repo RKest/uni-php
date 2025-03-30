@@ -6,14 +6,17 @@ if (!isset($_SESSION['z5'])) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-	header('Location: /z5/add_file.php');
+	header('Location: /z5/home.php');
 	exit();
 }
 
+require_once __DIR__ . "/common.php";
+
 $user = $_SESSION['z5'];
-$uploadDir = "../uploads/$user/";
+$dir = $_POST['dir'] ?? '';
+$uploadDir = "../uploads/$user/$dir/";
 $maxFileSize = 5 * 1024 * 1024;
-$allowedExtensions = ['pdf', 'doc', 'docx', 'txt', 'jpg', 'jpeg', 'png'];
+$allowedExtensions = ['pdf', 'doc', 'docx', 'txt', 'jpg', 'jpeg', 'png', 'mp3'];
 
 if (!file_exists($uploadDir)) {
     mkdir($uploadDir, 0777, true);
@@ -28,7 +31,6 @@ function handleFileUpload($file) {
         'filepath' => ''
     ];
     
-    // Check if file was uploaded without errors
     if ($file['error'] !== UPLOAD_ERR_OK) {
         $response['message'] = 'Upload failed with error code: ' . $file['error'];
         return $response;
@@ -50,11 +52,11 @@ function handleFileUpload($file) {
         return $response;
     }
 
-	// If file exsits error 
-	if (file_exists($uploadDir . $file['name'])) {
-		$response['message'] = 'File already exists';
-		return $response;
-	}
+    // If file exsits error 
+    if (file_exists($uploadDir . $file['name'])) {
+            $response['message'] = 'File already exists';
+            return $response;
+    }
     
     // Generate unique filename
     $uploadPath = $uploadDir . $file['name'];
@@ -71,13 +73,14 @@ function handleFileUpload($file) {
     return $response;
 }
 
-// Handle the upload if a file was submitted
 if (!empty($_FILES['file'])) {
+    $fileName = $_FILES['file']['name'];
     $result = handleFileUpload($_FILES['file']);
-    
-    // Send JSON response
-    header('Content-Type: application/json');
-    echo json_encode($result);
+    if ($result['success']) {
+        echo fileElem($user, $dir, $fileName);
+    } else {
+        header("HTTP/1.1 500 Internal Server Error");
+    }
     exit;
 }
 echo empty($_FILES['file']);

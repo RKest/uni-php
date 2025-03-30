@@ -1,5 +1,2 @@
-<ul>
-	<li><a href="/z5/filelist">List Files</a></li>
-	<li><a href="/z5/add_file">Add file</a></li>
-</ul>
-
+<main hx-get="/tasks/z5/api/get_ents.php" hx-target="this" hx-swap="innerHTML" hx-trigger="load">
+</main>
