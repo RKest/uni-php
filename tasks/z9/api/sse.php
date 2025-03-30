@@ -7,31 +7,6 @@ if (!isset($_SESSION['z9'])) {
 }
 
 $user = $_SESSION["z9"];
-$next_id = 0;
-
-require (dirname(__DIR__).'/../../vendor/autoload.php');
-use RedisClient\RedisClient;
-
-$Redis = new RedisClient([
-    'timeout' => 5 // wait 5 seconds for connection
-]);
-
-$Redis->subscribe('messages', function($type, $channel, $message) {
-    if ($type === 'message') {
-	global $next_id;
-	$next_id += 1;
-	sendSSE($next_id, $message);
-    }
-    return true;
-});
-
-// Set the appropriate headers for SSE
-header('Content-Type: text/event-stream');
-header('Cache-Control: no-cache');
-header('Connection: keep-alive');
-
-// Disable time limit for the script execution
-set_time_limit(0);
 
 // Function to send an SSE event
 function sendSSE($id, $data, $event = null) {
@@ -47,3 +22,39 @@ function sendSSE($id, $data, $event = null) {
     ob_flush();
     flush();
 }
+
+// Function to get the latest messages from the database
+// This function should be implemented to fetch messages from your database
+
+$db_pass = getenv("MYSQL_PASSWD");
+$conn = new mysqli('127.0.0.1', 'root', $db_pass, 'z9');
+
+if (!$conn) {
+	echo "Errno: " . $conn->error;
+	exit();
+}
+
+
+$stmt = $conn->prepare("SELECT id, content, file FROM messages");
+$stmt->execute();
+$result = $stmt->get_result();
+$stmt->close();
+
+// Log length
+error_log("Log length: " . $result->num_rows);
+
+while ($row = $result->fetch_assoc()) {
+    formatResponse($user, $row['content'], $row['file']);
+}
+
+function formatResponse($user, $message, $filepath) {
+    echo '<div>';
+    echo '<strong>' . htmlspecialchars($user) . ':</strong> ';
+    echo htmlspecialchars($message);
+    if ($filepath) {
+	echo '<a href="/tasks/z9/uploads/' . htmlspecialchars($filepath) . '" target="_blank" download>' . htmlspecialchars($filepath) . '</a>';
+    }
+    echo '</div>';
+}
+
+$conn->close();
