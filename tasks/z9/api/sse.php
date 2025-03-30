@@ -35,7 +35,7 @@ if (!$conn) {
 }
 
 
-$stmt = $conn->prepare("SELECT id, content, file FROM messages");
+$stmt = $conn->prepare("SELECT username, content, file FROM messages");
 $stmt->execute();
 $result = $stmt->get_result();
 $stmt->close();
@@ -44,16 +44,18 @@ $stmt->close();
 error_log("Log length: " . $result->num_rows);
 
 while ($row = $result->fetch_assoc()) {
-    formatResponse($user, $row['content'], $row['file']);
+    formatResponse($row['username'], $row['content'], $row['file']);
 }
 
 function formatResponse($user, $message, $filepath) {
     echo '<div>';
-    echo '<strong>' . htmlspecialchars($user) . ':</strong> ';
+    echo '<strong>' . htmlspecialchars($user) . ':</strong><br>';
     echo htmlspecialchars($message);
     if ($filepath) {
+	echo '<br>';
 	echo '<a href="/tasks/z9/uploads/' . htmlspecialchars($filepath) . '" target="_blank" download>' . htmlspecialchars($filepath) . '</a>';
     }
+    echo '<hr>';
     echo '</div>';
 }
 
