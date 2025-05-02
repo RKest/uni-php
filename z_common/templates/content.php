@@ -34,10 +34,5 @@
     <?php $content_fn(); ?>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-    <footer class="page-footer mt-auto bg-light border-primary">   
-        <div class="container-fluid">
-            Footer content
-        </div>
-    </footer>	
 </body>
 </html>

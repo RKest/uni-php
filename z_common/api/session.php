@@ -40,31 +40,83 @@ $post_sign_up = function($znum) {
 $post_sign_in = function($znum) {
     $user = htmlentities($_POST['user'], ENT_QUOTES, 'UTF-8');
     $pass = htmlentities($_POST['pass'], ENT_QUOTES, 'UTF-8');
+
     $db_pass = getenv("MYSQL_PASSWD");
-
-    $link = mysqli_connect('127.0.0.1', 'root', $db_pass, $znum);
-
-    if (!$link) {
-	echo "Error: " . mysqli_connect_error();
-	exit();
-    }
-
     $conn = new mysqli('127.0.0.1', 'root', $db_pass, $znum);
-
-    $stmt = $conn->prepare("SELECT * FROM users WHERE username=?");
-    $stmt->bind_param("s", $user);
-    $stmt->execute();
-    $result = $stmt->get_result()->fetch_assoc();
-
-    if ($result && $result['password'] === $pass) {
-	session_start();
-	$_SESSION[$znum] = $user;
-	header("Location: /$znum/home");
-    } else {
-	echo "Invalid login or password";
+    if (!$conn) {
+	    echo "Error: " . $conn->connect_error;
+	    goto conn_close;
     }
 
-    $stmt->close();
+    $user_stmt = $conn->prepare("SELECT * FROM users WHERE username=? LIMIT 1");
+    $user_stmt->bind_param("s", $user);
+    if (!$user_stmt->execute()) {
+	    echo "Error: " . $user_stmt->error;
+	    goto user_stmt_close;
+    }
+    $user_res = $user_stmt->get_result();
+    if ($user_res->num_rows === 0) {
+	echo "Invalid login or password";
+	goto user_stmt_close;
+    }
+    $user_assoc = $user_res->fetch_assoc();
+
+    $login_check_stmt = $conn->prepare("SELECT * FROM logins WHERE uid=? LIMIT 1");
+    $login_check_stmt->bind_param("i", $user_assoc['id']);
+    if (!$login_check_stmt->execute()) {
+	    echo "Error: " . $login_check_stmt->error;
+	    goto login_check_stmt_close;
+    }
+    $login_check_res = $login_check_stmt->get_result();
+    
+    $invalid_login_num = 0;
+    $invalid_login_time = 0;
+    if ($login_check_res->num_rows === 0) {
+	$login_insert_stmt = $conn->prepare("INSERT INTO logins (uid, last_login, state) VALUES (?, NOW(), 0)");
+	$login_insert_stmt->bind_param("i", $user_assoc['id']);
+	if (!$login_insert_stmt->execute()) {
+	    echo "Error: " . $login_insert_stmt->error;
+	    $login_insert_stmt->close();
+	    goto login_check_stmt_close;
+	}
+	$login_insert_stmt->close();
+	$login_check = ["state" => 0];
+    } else {
+	$login_check = $login_check_res->fetch_assoc();
+	$invalid_login_num = $login_check["state"];
+	$invalid_login_time = strtotime($login_check["last_login"]);
+    }
+
+    $curr_time = strtotime($conn->query("SELECT NOW()")->fetch_row()[0]);
+    $d = $curr_time - $invalid_login_time;
+
+    if ($invalid_login_num >= 3 && $d < 60) {
+	echo "Too many unsuccessful login attempts. Please wait " . (60 - $d) . " seconds.";
+	goto login_check_stmt_close;
+    }
+
+    $login_update_stmt = $conn->prepare("UPDATE logins SET last_login=NOW(), state=? WHERE uid=?");
+
+    $uid = $user_assoc['id'];
+    $new_state = 0;
+    if ($user_assoc['password'] === $pass) {
+	    session_start();
+	    $_SESSION[$znum] = $user;
+	    header("Location: /$znum/home");
+    } else {
+	    $new_state = $login_check["state"] + 1;
+	    echo "Invalid login or password";
+    }
+
+    $login_update_stmt->bind_param("ii", $new_state, $uid);
+    $login_update_stmt->execute();
+
+    $login_update_stmt->close();
+    login_check_stmt_close:
+    $login_check_stmt->close();
+    user_stmt_close:
+    $user_stmt->close();
+    conn_close:
     $conn->close();
 };
 

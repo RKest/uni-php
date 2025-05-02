@@ -11,4 +11,10 @@ $sign_up_view = function($znum) {
     require __DIR__.'/../templates/sign_up.php';
 };
 
+$admin_view = function($znum) {
+    $admin_uri = "/$znum/api/admin";
+    $sign_in_uri = "/$znum/view/sign_in";
+    require __DIR__.'/../templates/admin.php';
+};
+
 ?>

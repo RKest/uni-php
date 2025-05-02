@@ -14,6 +14,7 @@ get('/$znum/api/profile_image', $get_profile_image);
 require_once __DIR__.'/z_common/view/session.php';
 get('/$znum/view/sign_in', $sign_in_view);
 get('/$znum/view/sign_up', $sign_up_view);
+get('/$znum/view/admin', $admin_view);
 
 require_once __DIR__.'/z_common/view/content.php';
 get('/$znum/$page', function ($znum, $page) {
