@@ -1,3 +1,4 @@
 .direnv
 mysql_data
 .envrc
+.devenv

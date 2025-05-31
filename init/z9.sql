@@ -21,9 +21,20 @@ INSERT INTO `users` (`id`, `username`, `password`, `image`) VALUES
 (2, 'user2', 'pass2', null),
 (3, 'admin', 'admin', null);
 
+CREATE TABLE rooms (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user1_id INT NOT NULL,
+    user2_id INT NOT NULL,
+    FOREIGN KEY (user1_id) REFERENCES users(id),
+    FOREIGN KEY (user2_id) REFERENCES users(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_polish_ci;
+
 CREATE TABLE messages (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    username VARCHAR(50) COLLATE utf8_polish_ci NOT NULL,
-    content TEXT COLLATE utf8_polish_ci NOT NULL,
-    file VARCHAR(255) COLLATE utf8_polish_ci
+    uid INT NOT NULL,
+    room_id INT NOT NULL,
+    message TEXT COLLATE utf8_polish_ci NOT NULL,
+    filename VARCHAR(255),
+    FOREIGN KEY (room_id) REFERENCES rooms(id),
+    FOREIGN KEY (uid) REFERENCES users(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_polish_ci;
