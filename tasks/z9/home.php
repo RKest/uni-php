@@ -1,4 +1,13 @@
 <body>
+	<script>
+	    let lastContent = "";
+	    function compareAndSwap(event) {
+			const xhr = event.detail.xhr;
+			const newContent = xhr.responseText;
+			event.detail.shouldSwap = lastContent !== newContent;
+			lastContent = newContent;
+	    }
+	</script>
 	<form hx-post="/tasks/z9/api/send.php" hx-vals='js:{"uid": document.getElementById("sel").value}' hx-swap="none" hx-encoding='multipart/form-data'>
 		<input type="text" name="content" placeholder="Type your message here" required>
 		<input type="file" name="file">
@@ -38,7 +47,10 @@
 	<div
 		hx-post="/tasks/z9/api/sse.php"
 		hx-trigger="load, every 1s"
+		hx-target="this"
 		hx-vals='js:{"uid": document.getElementById("sel").value || "1"}'
-		hx-swap="innerHTML">
+		hx-swap="innerHTML"
+		hx-on:htmx:before-swap="compareAndSwap(event)"
+	>
 	</div>
 </body>

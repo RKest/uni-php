@@ -102,11 +102,7 @@ $post_sign_in = function($znum) {
     if ($user_assoc['password'] === $pass) {
 	    session_start();
 	    $_SESSION[$znum] = $user;
-	    if ($user == "admin") {
-		header("Location: /$znum/view/admin");
-	    } else {
-		header("Location: /$znum/home");
-	    }
+	    header("Location: /$znum/home");
     } else {
 	    $new_state = $login_check["state"] + 1;
 	    echo "Invalid login or password";

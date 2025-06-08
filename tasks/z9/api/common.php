@@ -92,10 +92,21 @@ function messages_for_room($conn, $rid) {
 	echo '<div>';
 	echo '<strong>' . htmlspecialchars($username) . ':</strong><br>';
 	echo htmlspecialchars($row['message']);
-	if ($row['filename']) {
+	if ($row['filename'] === null || $row['filename'] === '') {
+	    goto next_row;
+	}
+	$ext = pathinfo($row['filename'], PATHINFO_EXTENSION);
+	if ($ext === 'jpg' || $ext === 'jpeg' || $ext === 'png' || $ext === 'gif') {
+	    echo '<br><img src="/tasks/z9/uploads/' . htmlspecialchars($row['filename']) . '" alt="Image" style="max-width: 300px; max-height: 300px;">';
+	} elseif ($ext === 'mp4' || $ext === 'webm') {
+	    echo '<br><video controls style="max-width: 300px; max-height: 300px;"><source src="/tasks/z9/uploads/' . htmlspecialchars($row['filename']) . '" type="video/' . htmlspecialchars($ext) . '"></video>';
+	} elseif ($ext === 'mp3' || $ext === 'wav') {
+	    echo '<br><audio controls><source src="/tasks/z9/uploads/' . htmlspecialchars($row['filename']) . '" type="audio/' . htmlspecialchars($ext) . '"></audio>';
+	} else {
 	    echo ' <a href="/tasks/z9/uploads/' . htmlspecialchars($row['filename']) . '" target="_blank" download>' . htmlspecialchars($row['filename']) . '</a>';
 	}
 
+	next_row:
 	echo '</div>';
     }
 }

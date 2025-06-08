@@ -7,8 +7,14 @@ $user = $_SESSION["z13"];
 $db_pass = getenv("MYSQL_PASSWD");
 $conn = new mysqli('127.0.0.1', 'root', $db_pass, 'z13');
 
+
 if (!$conn) {
 	echo "Error: " . $conn->connect_error;
+	goto conn_close;
+}
+
+if ($user === "admin") {
+	render_admin($conn);
 	goto conn_close;
 }
 
