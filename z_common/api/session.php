@@ -33,6 +33,16 @@ $post_sign_up = function($znum) {
 	header("Location: /$znum/home");
     }
 
+    if ($znum == "z16") {
+	$user_type = $_POST['user_type'] ?? 'client';
+	$user_type_stmt = $conn->prepare("UPDATE users SET user_type=? WHERE username=?");
+	$user_type_stmt->bind_param("ss", $user_type, $user);
+	if (!$user_type_stmt->execute()) {
+		echo "Error: Could not set user type";
+	}
+	$user_type_stmt->close();
+    }
+
     $stmt->close();
     $conn->close();
 };

@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS users (
     username VARCHAR(50) UNIQUE COLLATE utf8_polish_ci NOT NULL,
     password VARCHAR(255) COLLATE utf8_polish_ci NOT NULL,
     image MEDIUMBLOB,
-	user_type ENUM('client', 'employee', 'admin') NOT NULL DEFAULT 'client'
+    user_type ENUM('client', 'employee', 'admin') NOT NULL DEFAULT 'client'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_polish_ci;
 
 CREATE TABLE IF NOT EXISTS logins (

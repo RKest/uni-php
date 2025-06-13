@@ -23,8 +23,18 @@
             <div class="mb-2">
                 <input name="profile_image" type="file" class="form-control" accept="image/*">
             </div>
+
+            <?php if ($znum == "z16") : ?>
+                <div class="mt-3 text-center">
+                    <select name="user_type">
+                        <option value="client">Client</option>
+                        <option value="employee">Employee</option>
+                    </select>
+                </div>
+            <?php endif; ?>
             
             <button class="w-100 btn btn-lg btn-primary" type="submit">Sign up</button>
+
         </form>    
     </main>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
